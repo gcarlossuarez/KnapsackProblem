@@ -8,7 +8,7 @@ on:
 
 env:
   APP_NAME: KnapsackProblem                    # <-- NOMBRE de tu app (sin espacios)
-  PROJECT: KnapsackProblem/KnapsackProblem.csproj  # <-- ruta a tu .csproj
+  PROJECT: KnapsackProblem.csproj  # <-- ruta a tu .csproj
   DOTNET_VERSION: 8.0.x                        # <-- versión .NET
 
 jobs:
