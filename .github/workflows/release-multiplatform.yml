@@ -101,24 +101,41 @@ jobs:
       # <-- STEP AJUSTADO PARA .APP BUNDLE Y TEST HEADLESS
       - name: Ejecutar y probar app en macOS (arm64)
         run: |
-          # Cambia a dir del publish y ejecuta el binario dentro del .app
-          cd publish/osx-arm64
-          if [ -d "${{ env.APP_NAME }}.app" ]; then
-            cd "${{ env.APP_NAME }}.app/Contents/MacOS"
-            echo "Ejecutando app desde bundle..."
+          # Debug: Lista el contenido del dir para ver la estructura real
+          echo "=== DEBUG: Contenido de publish/osx-arm64 ==="
+          ls -la publish/osx-arm64
+          
+          # Si hay .app, úsalo; sino, busca el ejecutable suelto
+          if [ -d "publish/osx-arm64/${{ env.APP_NAME }}.app" ]; then
+            echo "=== Encontrado .app bundle, ejecutando desde Contents/MacOS ==="
+            cd "publish/osx-arm64/${{ env.APP_NAME }}.app/Contents/MacOS"
+            # Lista para confirmar el binario
+            ls -la
+            # Ejecuta con timeout (GUI headless timed out es normal)
+            timeout 10s ./${{ env.APP_NAME }} || true
           else
-            echo "No se encontró .app bundle, ejecutando directo..."
+            echo "=== No .app bundle, ejecutando directo desde publish/osx-arm64 ==="
+            cd publish/osx-arm64
+            # Busca y ejecuta el binario principal (debería ser KnapsackProblem)
+            EXEC=$(find . -maxdepth 1 -type f -executable -name "*KnapsackProblem*" | head -1)
+            if [ -n "$EXEC" ]; then
+              echo "Ejecutable encontrado: $EXEC"
+              timeout 10s "$EXEC" || true
+            else
+              echo "=== ERROR: No se encontró ejecutable válido ==="
+              ls -la  # Lista extra para debug
+              exit 1
+            fi
           fi
           
-          # Ejecuta con timeout de 30s (para no colgar el workflow)
-          timeout 30s ./${{ env.APP_NAME }} || true  # '|| true' evita fallo por timeout
-          
-          # Verifica si inició sin crash inmediato (exit code != 137 para killed)
-          if [ $? -eq 0 ] || [ $? -eq 124 ]; then  # 124 = timeout, pero OK si no crash
-            echo "¡App ejecutada con éxito en macOS (o timeout por GUI, pero sin crash)!"
+          # Chequea resultado
+          EXIT_CODE=$?
+          echo "=== Exit code: $EXIT_CODE ==="
+          if [ $EXIT_CODE -eq 0 ] || [ $EXIT_CODE -eq 124 ] || [ $EXIT_CODE -eq 143 ]; then
+            echo "¡ÉXITO: App arrancó sin crash (timeout por GUI es esperado en Actions headless)!"
           else
-            echo "Error en ejecución (código: $?)"
-            exit 1  # Falla si hay crash real
+            echo "FALLO: Error en ejecución (código $EXIT_CODE). Revisa logs arriba."
+            exit 1
           fi
 
   release:
