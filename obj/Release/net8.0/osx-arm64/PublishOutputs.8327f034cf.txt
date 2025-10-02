@@ -1,0 +1,5 @@
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/osx-arm64/publish/KnapsackProblem.pdb
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/osx-arm64/publish/libAvaloniaNative.dylib
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/osx-arm64/publish/libHarfBuzzSharp.dylib
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/osx-arm64/publish/libSkiaSharp.dylib
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/osx-arm64/publish/KnapsackProblem

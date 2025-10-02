@@ -1,0 +1,34 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <!-- ✅ Forzar Avalonia a usar runtime bindings -->
+    <!--<AvaloniaXamlDisableXamlIlCompiler>true</AvaloniaXamlDisableXamlIlCompiler>-->
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.1.0" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.1.0" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.0.10" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.0.10" />
+    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.0.10" />
+    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.2" />
+    <PackageReference Include="MessageBox.Avalonia" Version="3.1.5" />
+  </ItemGroup>
+
+  <PropertyGroup>
+    <AssemblyName>KnapsackProblem</AssemblyName>
+    <Version>1.0.0</Version>
+    <Description>Simulador Educativo del Problema de la Mochila con DP</Description>
+    <Authors>German Carlos Suárez Alanís</Authors>
+   </PropertyGroup>
+
+   <!--<ItemGroup>
+     <AvaloniaResource Include="Assets/coin.ico"/>
+   </ItemGroup>-->
+
+</Project>
+

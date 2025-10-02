@@ -1,0 +1,4 @@
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/linux-x64/publish/KnapsackProblem.pdb
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/linux-x64/publish/libHarfBuzzSharp.so
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/linux-x64/publish/libSkiaSharp.so
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/linux-x64/publish/KnapsackProblem

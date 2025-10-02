@@ -1,0 +1,5 @@
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/win-x64/publish/KnapsackProblem.pdb
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/win-x64/publish/av_libglesv2.dll
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/win-x64/publish/libHarfBuzzSharp.dll
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/win-x64/publish/libSkiaSharp.dll
+/home/gcarl/misproyectos/KnapsackProblem/bin/Release/net8.0/win-x64/publish/KnapsackProblem.exe
