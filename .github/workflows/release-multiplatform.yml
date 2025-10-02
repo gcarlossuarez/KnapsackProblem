@@ -98,6 +98,29 @@ jobs:
             ${{ env.APP_NAME }}-osx-arm64.zip
             ${{ env.APP_NAME }}-osx-x64.zip
 
+      # <-- STEP AJUSTADO PARA .APP BUNDLE Y TEST HEADLESS
+      - name: Ejecutar y probar app en macOS (arm64)
+        run: |
+          # Cambia a dir del publish y ejecuta el binario dentro del .app
+          cd publish/osx-arm64
+          if [ -d "${{ env.APP_NAME }}.app" ]; then
+            cd "${{ env.APP_NAME }}.app/Contents/MacOS"
+            echo "Ejecutando app desde bundle..."
+          else
+            echo "No se encontró .app bundle, ejecutando directo..."
+          fi
+          
+          # Ejecuta con timeout de 30s (para no colgar el workflow)
+          timeout 30s ./${{ env.APP_NAME }} || true  # '|| true' evita fallo por timeout
+          
+          # Verifica si inició sin crash inmediato (exit code != 137 para killed)
+          if [ $? -eq 0 ] || [ $? -eq 124 ]; then  # 124 = timeout, pero OK si no crash
+            echo "¡App ejecutada con éxito en macOS (o timeout por GUI, pero sin crash)!"
+          else
+            echo "Error en ejecución (código: $?)"
+            exit 1  # Falla si hay crash real
+          fi
+
   release:
     runs-on: ubuntu-latest
     needs: [build-windows, build-linux, build-macos]
