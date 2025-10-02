@@ -6,13 +6,13 @@ on:
       - 'v*'          # se dispara al pushear un tag tipo v1.0.0
   workflow_dispatch:   # permite lanzarlo manualmente
 
-permissions:  # <-- ¡AGREGA ESTO!
+permissions:
   contents: write  # Permite crear releases y subir archivos
 
 env:
-  APP_NAME: KnapsackProblem                    # <-- NOMBRE de tu app (sin espacios)
-  PROJECT: KnapsackProblem.csproj  # <-- ruta a tu .csproj
-  DOTNET_VERSION: 8.0.x                        # <-- versión .NET
+  APP_NAME: KnapsackProblem                     # <-- NOMBRE de la app (sin espacios)
+  PROJECT: KnapsackProblem.csproj               # <-- ruta al .csproj
+  DOTNET_VERSION: 8.0.x                         # <-- versión .NET
 
 jobs:
   build-windows:
@@ -69,36 +69,105 @@ jobs:
       - name: Publish (osx-x64, self-contained, app host)
         run: dotnet publish ${{ env.PROJECT }} -c Release -r osx-x64 --self-contained true -p:UseAppHost=true -o publish/osx-x64
 
+      # Crea bundle .app para arm64
+      - name: Crear .app bundle (osx-arm64)
+        run: |
+          cd publish/osx-arm64
+          mkdir -p KnapsackProblem.app/Contents/MacOS
+          mkdir -p KnapsackProblem.app/Contents/Resources
+          
+          # Mueve ejecutable y archivos al bundle
+          mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/
+          mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/
+          
+          # Info.plist básico
+          cat > KnapsackProblem.app/Contents/Info.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleExecutable</key>
+            <string>KnapsackProblem</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.gcarlossuarez.knapsackproblem</string>
+            <key>CFBundleName</key>
+            <string>KnapsackProblem</string>
+            <key>CFBundleVersion</key>
+            <string>1.0</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0</string>
+          </dict>
+          </plist>
+          EOF
+          echo "Bundle .app creado para arm64"
+
+      # Crea bundle .app para x64
+      - name: Crear .app bundle (osx-x64)
+        run: |
+          cd publish/osx-x64
+          mkdir -p KnapsackProblem.app/Contents/MacOS
+          mkdir -p KnapsackProblem.app/Contents/Resources
+          
+          mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/
+          mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/
+          
+          cat > KnapsackProblem.app/Contents/Info.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>CFBundleExecutable</key>
+            <string>KnapsackProblem</string>
+            <key>CFBundleIdentifier</key>
+            <string>com.gcarlossuarez.knapsackproblem</string>
+            <key>CFBundleName</key>
+            <string>KnapsackProblem</string>
+            <key>CFBundleVersion</key>
+            <string>1.0</string>
+            <key>CFBundleShortVersionString</key>
+            <string>1.0</string>
+          </dict>
+          </plist>
+          EOF
+          echo "Bundle .app creado para x64"
+
       # (Opcional) Firma ad-hoc para reducir alertas de Gatekeeper (no sustituye notarización)
       - name: Ad-hoc codesign
         run: |
-          if [ -d "publish/osx-arm64/${{ env.APP_NAME }}.app" ]; then
-            codesign --force --deep -s - "publish/osx-arm64/${{ env.APP_NAME }}.app"
+          if [ -d "publish/osx-arm64/KnapsackProblem.app" ]; then
+            codesign --force --deep -s - "publish/osx-arm64/KnapsackProblem.app"
           fi
-          if [ -d "publish/osx-x64/${{ env.APP_NAME }}.app" ]; then
-            codesign --force --deep -s - "publish/osx-x64/${{ env.APP_NAME }}.app"
+          if [ -d "publish/osx-x64/KnapsackProblem.app" ]; then
+            codesign --force --deep -s - "publish/osx-x64/KnapsackProblem.app"
           fi
 
+      # Empaquetar 4 ZIPs (bundle y flat para cada arch)
       - name: Empaquetar ZIPs (macOS)
         run: |
-          if [ -d "publish/osx-arm64/${{ env.APP_NAME }}.app" ]; then
-            (cd publish/osx-arm64 && zip -r ../../${{ env.APP_NAME }}-osx-arm64.zip "${{ env.APP_NAME }}.app")
-          else
-            (cd publish/osx-arm64 && zip -r ../../${{ env.APP_NAME }}-osx-arm64.zip .)
-          fi
-          if [ -d "publish/osx-x64/${{ env.APP_NAME }}.app" ]; then
-            (cd publish/osx-x64 && zip -r ../../${{ env.APP_NAME }}-osx-x64.zip "${{ env.APP_NAME }}.app")
-          else
-            (cd publish/osx-x64 && zip -r ../../${{ env.APP_NAME }}-osx-x64.zip .)
-          fi
+          # Arm64 bundle
+          cd publish/osx-arm64
+          zip -r ../../${{ env.APP_NAME }}-osx-arm64-bundle.zip "KnapsackProblem.app"
+          
+          # Arm64 flat
+          zip -r ../../${{ env.APP_NAME }}-osx-arm64-flat.zip .
+          
+          # x64 bundle
+          cd publish/osx-x64
+          zip -r ../../${{ env.APP_NAME }}-osx-x64-bundle.zip "KnapsackProblem.app"
+          
+          # x64 flat
+          zip -r ../../${{ env.APP_NAME }}-osx-x64-flat.zip .
+
       - uses: actions/upload-artifact@v4
         with:
           name: macos-zips
           path: |
-            ${{ env.APP_NAME }}-osx-arm64.zip
-            ${{ env.APP_NAME }}-osx-x64.zip
+            ${{ env.APP_NAME }}-osx-arm64-bundle.zip
+            ${{ env.APP_NAME }}-osx-arm64-flat.zip
+            ${{ env.APP_NAME }}-osx-x64-bundle.zip
+            ${{ env.APP_NAME }}-osx-x64-flat.zip
 
-      # <-- STEP AJUSTADO PARA .APP BUNDLE Y TEST HEADLESS
+      # STEP AJUSTADO PARA .APP BUNDLE Y TEST HEADLESS
       - name: Ejecutar y probar app en macOS (arm64)
         run: |
           # Debug: Lista el contenido del dir para ver la estructura real
@@ -108,11 +177,11 @@ jobs:
           cd publish/osx-arm64
           
           # Chequea si hay .app (por si acaso)
-          if [ -d "${{ env.APP_NAME }}.app" ]; then
+          if [ -d "KnapsackProblem.app" ]; then
             echo "=== Encontrado .app bundle, ejecutando desde Contents/MacOS ==="
-            cd "${{ env.APP_NAME }}.app/Contents/MacOS"
+            cd "KnapsackProblem.app/Contents/MacOS"
             ls -la  # Debug
-            timeout 10s ./${{ env.APP_NAME }} || true
+            timeout 10s ./KnapsackProblem || true
           else
             echo "=== No .app bundle, ejecutando directo ==="
             # Chequea directo el ejecutable conocido (más simple y macOS-friendly)
@@ -153,9 +222,10 @@ jobs:
           files: |
             dist/windows-zip/${{ env.APP_NAME }}-win-x64.zip
             dist/linux-tar/${{ env.APP_NAME }}-linux-x64.tar.gz
-            dist/macos-zips/${{ env.APP_NAME }}-osx-arm64.zip
-            dist/macos-zips/${{ env.APP_NAME }}-osx-x64.zip
+            dist/macos-zips/${{ env.APP_NAME }}-osx-arm64-bundle.zip
+            dist/macos-zips/${{ env.APP_NAME }}-osx-arm64-flat.zip
+            dist/macos-zips/${{ env.APP_NAME }}-osx-x64-bundle.zip
+            dist/macos-zips/${{ env.APP_NAME }}-osx-x64-flat.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
