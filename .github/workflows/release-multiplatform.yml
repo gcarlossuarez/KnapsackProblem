@@ -6,8 +6,8 @@ on:
       - 'v*'          # se dispara al pushear un tag tipo v1.0.0
   workflow_dispatch:   # permite lanzarlo manualmente
 
-  permissions:  # <-- ¡AGREGA ESTO!
-    contents: write  # Permite crear releases y subir archivos
+permissions:  # <-- ¡AGREGA ESTO!
+  contents: write  # Permite crear releases y subir archivos
 
 env:
   APP_NAME: KnapsackProblem                    # <-- NOMBRE de tu app (sin espacios)
