@@ -91,7 +91,7 @@ jobs:
             mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/ || echo "Advertencia: KnapsackProblem no encontrado para mover"
             mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/ 2>/dev/null || true
             
-            # Info.plist básico (con heredoc de-indented)
+            # Info.plist básico (usando literal block para heredoc)
             cat > KnapsackProblem.app/Contents/Info.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -128,7 +128,7 @@ EOF
             mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/ || echo "Advertencia: KnapsackProblem no encontrado para mover"
             mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/ 2>/dev/null || true
             
-            # Info.plist básico (con heredoc de-indented)
+            # Info.plist básico (usando literal block para heredoc)
             cat > KnapsackProblem.app/Contents/Info.plist << 'EOF'
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
@@ -270,10 +270,10 @@ EOF
           files: |
             dist/windows-zip/${{ env.APP_NAME }}-win-x64.zip
             dist/linux-tar/${{ env.APP_NAME }}-linux-x64.tar.gz
-            dist/macos-zips/${{ env.APP_NAME }}-osx-arm64-bundle.zip
-            dist/macos-zips/${{ env.APP_NAME }}-osx-arm64-flat.zip
-            dist/macos-zips/${{ env.APP_NAME }}-osx-x64-bundle.zip
-            dist/macos-zips/${{ env.APP_NAME }}-osx-x64-flat.zip
+            dist/macos-zips/${{ env.APP_NAME }}-osx-arm64.zip
+            dist/macos-zips/${{ env.APP_NAME }}-osx-x64.zip
           generate_release_notes: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+          
