@@ -105,25 +105,23 @@ jobs:
           echo "=== DEBUG: Contenido de publish/osx-arm64 ==="
           ls -la publish/osx-arm64
           
-          # Si hay .app, úsalo; sino, busca el ejecutable suelto
-          if [ -d "publish/osx-arm64/${{ env.APP_NAME }}.app" ]; then
+          cd publish/osx-arm64
+          
+          # Chequea si hay .app (por si acaso)
+          if [ -d "${{ env.APP_NAME }}.app" ]; then
             echo "=== Encontrado .app bundle, ejecutando desde Contents/MacOS ==="
-            cd "publish/osx-arm64/${{ env.APP_NAME }}.app/Contents/MacOS"
-            # Lista para confirmar el binario
-            ls -la
-            # Ejecuta con timeout (GUI headless timed out es normal)
+            cd "${{ env.APP_NAME }}.app/Contents/MacOS"
+            ls -la  # Debug
             timeout 10s ./${{ env.APP_NAME }} || true
           else
-            echo "=== No .app bundle, ejecutando directo desde publish/osx-arm64 ==="
-            cd publish/osx-arm64
-            # Busca y ejecuta el binario principal (debería ser KnapsackProblem)
-            EXEC=$(find . -maxdepth 1 -type f -executable -name "*KnapsackProblem*" | head -1)
-            if [ -n "$EXEC" ]; then
-              echo "Ejecutable encontrado: $EXEC"
-              timeout 10s "$EXEC" || true
+            echo "=== No .app bundle, ejecutando directo ==="
+            # Chequea directo el ejecutable conocido (más simple y macOS-friendly)
+            if [ -x "./KnapsackProblem" ]; then
+              echo "Ejecutable encontrado: ./KnapsackProblem"
+              timeout 10s ./KnapsackProblem || true
             else
-              echo "=== ERROR: No se encontró ejecutable válido ==="
-              ls -la  # Lista extra para debug
+              echo "=== ERROR: No se encontró ./KnapsackProblem ==="
+              ls -la  # Lista extra
               exit 1
             fi
           fi
