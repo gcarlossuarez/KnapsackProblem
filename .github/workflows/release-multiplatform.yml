@@ -91,25 +91,25 @@ jobs:
             mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/ || echo "Advertencia: KnapsackProblem no encontrado para mover"
             mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/ 2>/dev/null || true
             
-            # Info.plist básico
-            cat > KnapsackProblem.app/Contents/Info.plist << EOF
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-              <key>CFBundleExecutable</key>
-              <string>KnapsackProblem</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.gcarlossuarez.knapsackproblem</string>
-              <key>CFBundleName</key>
-              <string>KnapsackProblem</string>
-              <key>CFBundleVersion</key>
-              <string>1.0</string>
-              <key>CFBundleShortVersionString</key>
-              <string>1.0</string>
-            </dict>
-            </plist>
-            EOF
+            # Info.plist básico (con heredoc de-indented)
+            cat > KnapsackProblem.app/Contents/Info.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>KnapsackProblem</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.gcarlossuarez.knapsackproblem</string>
+  <key>CFBundleName</key>
+  <string>KnapsackProblem</string>
+  <key>CFBundleVersion</key>
+  <string>1.0</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0</string>
+</dict>
+</plist>
+EOF
             echo "Bundle .app creado para arm64"
           else
             echo "Error: Dir publish/osx-arm64 no existe para crear bundle"
@@ -128,25 +128,25 @@ jobs:
             mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/ || echo "Advertencia: KnapsackProblem no encontrado para mover"
             mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/ 2>/dev/null || true
             
-            # Info.plist básico
-            cat > KnapsackProblem.app/Contents/Info.plist << EOF
-            <?xml version="1.0" encoding="UTF-8"?>
-            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-            <plist version="1.0">
-            <dict>
-              <key>CFBundleExecutable</key>
-              <string>KnapsackProblem</string>
-              <key>CFBundleIdentifier</key>
-              <string>com.gcarlossuarez.knapsackproblem</string>
-              <key>CFBundleName</key>
-              <string>KnapsackProblem</string>
-              <key>CFBundleVersion</key>
-              <string>1.0</string>
-              <key>CFBundleShortVersionString</key>
-              <string>1.0</string>
-            </dict>
-            </plist>
-            EOF
+            # Info.plist básico (con heredoc de-indented)
+            cat > KnapsackProblem.app/Contents/Info.plist << 'EOF'
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>CFBundleExecutable</key>
+  <string>KnapsackProblem</string>
+  <key>CFBundleIdentifier</key>
+  <string>com.gcarlossuarez.knapsackproblem</string>
+  <key>CFBundleName</key>
+  <string>KnapsackProblem</string>
+  <key>CFBundleVersion</key>
+  <string>1.0</string>
+  <key>CFBundleShortVersionString</key>
+  <string>1.0</string>
+</dict>
+</plist>
+EOF
             echo "Bundle .app creado para x64"
           else
             echo "Error: Dir publish/osx-x64 no existe para crear bundle"
