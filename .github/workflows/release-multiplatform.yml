@@ -10,9 +10,9 @@ permissions:
   contents: write  # Permite crear releases y subir archivos
 
 env:
-  APP_NAME: KnapsackProblem                     # <-- NOMBRE de la app (sin espacios)
-  PROJECT: KnapsackProblem.csproj               # <-- ruta al .csproj
-  DOTNET_VERSION: 8.0.x                         # <-- versión .NET
+  APP_NAME: KnapsackProblem                    # <-- NOMBRE de tu app (sin espacios)
+  PROJECT: KnapsackProblem.csproj  # <-- ruta a tu .csproj
+  DOTNET_VERSION: 8.0.x                        # <-- versión .NET
 
 jobs:
   build-windows:
@@ -66,97 +66,145 @@ jobs:
       - name: Publish (osx-arm64, self-contained, app host)
         run: dotnet publish ${{ env.PROJECT }} -c Release -r osx-arm64 --self-contained true -p:UseAppHost=true -o publish/osx-arm64
 
+      - name: Debug publish osx-arm64
+        run: |
+          echo "=== DEBUG: Contenido de publish/osx-arm64 después de publish ==="
+          ls -la publish/osx-arm64 || echo "Dir osx-arm64 no encontrado"
+
       - name: Publish (osx-x64, self-contained, app host)
         run: dotnet publish ${{ env.PROJECT }} -c Release -r osx-x64 --self-contained true -p:UseAppHost=true -o publish/osx-x64
+
+      - name: Debug publish osx-x64
+        run: |
+          echo "=== DEBUG: Contenido de publish/osx-x64 después de publish ==="
+          ls -la publish/osx-x64 || echo "Dir osx-x64 no encontrado"
 
       # Crea bundle .app para arm64
       - name: Crear .app bundle (osx-arm64)
         run: |
-          cd publish/osx-arm64
-          mkdir -p KnapsackProblem.app/Contents/MacOS
-          mkdir -p KnapsackProblem.app/Contents/Resources
-          
-          # Mueve ejecutable y archivos al bundle
-          mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/
-          mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/
-          
-          # Info.plist básico
-          cat > KnapsackProblem.app/Contents/Info.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>CFBundleExecutable</key>
-            <string>KnapsackProblem</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.gcarlossuarez.knapsackproblem</string>
-            <key>CFBundleName</key>
-            <string>KnapsackProblem</string>
-            <key>CFBundleVersion</key>
-            <string>1.0</string>
-            <key>CFBundleShortVersionString</key>
-            <string>1.0</string>
-          </dict>
-          </plist>
-          EOF
-          echo "Bundle .app creado para arm64"
+          if [ -d "publish/osx-arm64" ]; then
+            cd publish/osx-arm64
+            mkdir -p KnapsackProblem.app/Contents/MacOS
+            mkdir -p KnapsackProblem.app/Contents/Resources
+            
+            # Mueve ejecutable y archivos al bundle
+            mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/ || echo "Advertencia: KnapsackProblem no encontrado para mover"
+            mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/ 2>/dev/null || true
+            
+            # Info.plist básico
+            cat > KnapsackProblem.app/Contents/Info.plist << EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>CFBundleExecutable</key>
+              <string>KnapsackProblem</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.gcarlossuarez.knapsackproblem</string>
+              <key>CFBundleName</key>
+              <string>KnapsackProblem</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+            </dict>
+            </plist>
+            EOF
+            echo "Bundle .app creado para arm64"
+          else
+            echo "Error: Dir publish/osx-arm64 no existe para crear bundle"
+            exit 1
+          fi
 
       # Crea bundle .app para x64
       - name: Crear .app bundle (osx-x64)
         run: |
-          cd publish/osx-x64
-          mkdir -p KnapsackProblem.app/Contents/MacOS
-          mkdir -p KnapsackProblem.app/Contents/Resources
-          
-          mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/
-          mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/
-          
-          cat > KnapsackProblem.app/Contents/Info.plist << EOF
-          <?xml version="1.0" encoding="UTF-8"?>
-          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-          <plist version="1.0">
-          <dict>
-            <key>CFBundleExecutable</key>
-            <string>KnapsackProblem</string>
-            <key>CFBundleIdentifier</key>
-            <string>com.gcarlossuarez.knapsackproblem</string>
-            <key>CFBundleName</key>
-            <string>KnapsackProblem</string>
-            <key>CFBundleVersion</key>
-            <string>1.0</string>
-            <key>CFBundleShortVersionString</key>
-            <string>1.0</string>
-          </dict>
-          </plist>
-          EOF
-          echo "Bundle .app creado para x64"
+          if [ -d "publish/osx-x64" ]; then
+            cd publish/osx-x64
+            mkdir -p KnapsackProblem.app/Contents/MacOS
+            mkdir -p KnapsackProblem.app/Contents/Resources
+            
+            # Mueve ejecutable y archivos al bundle
+            mv KnapsackProblem KnapsackProblem.app/Contents/MacOS/ || echo "Advertencia: KnapsackProblem no encontrado para mover"
+            mv *.dylib *.dll *.json *.pdb KnapsackProblem.app/Contents/MacOS/ 2>/dev/null || true
+            
+            # Info.plist básico
+            cat > KnapsackProblem.app/Contents/Info.plist << EOF
+            <?xml version="1.0" encoding="UTF-8"?>
+            <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+            <plist version="1.0">
+            <dict>
+              <key>CFBundleExecutable</key>
+              <string>KnapsackProblem</string>
+              <key>CFBundleIdentifier</key>
+              <string>com.gcarlossuarez.knapsackproblem</string>
+              <key>CFBundleName</key>
+              <string>KnapsackProblem</string>
+              <key>CFBundleVersion</key>
+              <string>1.0</string>
+              <key>CFBundleShortVersionString</key>
+              <string>1.0</string>
+            </dict>
+            </plist>
+            EOF
+            echo "Bundle .app creado para x64"
+          else
+            echo "Error: Dir publish/osx-x64 no existe para crear bundle"
+            exit 1
+          fi
 
       # (Opcional) Firma ad-hoc para reducir alertas de Gatekeeper (no sustituye notarización)
       - name: Ad-hoc codesign
         run: |
           if [ -d "publish/osx-arm64/KnapsackProblem.app" ]; then
             codesign --force --deep -s - "publish/osx-arm64/KnapsackProblem.app"
+            echo "Codesign completado para arm64 bundle"
           fi
           if [ -d "publish/osx-x64/KnapsackProblem.app" ]; then
             codesign --force --deep -s - "publish/osx-x64/KnapsackProblem.app"
+            echo "Codesign completado para x64 bundle"
           fi
 
       # Empaquetar 4 ZIPs (bundle y flat para cada arch)
       - name: Empaquetar ZIPs (macOS)
         run: |
           # Arm64 bundle
-          cd publish/osx-arm64
-          zip -r ../../${{ env.APP_NAME }}-osx-arm64-bundle.zip "KnapsackProblem.app"
+          if [ -d "publish/osx-arm64/KnapsackProblem.app" ]; then
+            cd publish/osx-arm64
+            zip -r ../../${{ env.APP_NAME }}-osx-arm64-bundle.zip "KnapsackProblem.app"
+            echo "ZIP bundle arm64 creado"
+          else
+            echo "Advertencia: No se encontró bundle arm64, saltando ZIP bundle"
+          fi
           
-          # Arm64 flat
-          zip -r ../../${{ env.APP_NAME }}-osx-arm64-flat.zip .
+          # Arm64 flat (siempre, ya que funciona)
+          if [ -d "publish/osx-arm64" ]; then
+            cd publish/osx-arm64
+            zip -r ../../${{ env.APP_NAME }}-osx-arm64-flat.zip .
+            echo "ZIP flat arm64 creado"
+          else
+            echo "Error: Dir publish/osx-arm64 no existe para flat"
+            exit 1
+          fi
           
           # x64 bundle
-          cd publish/osx-x64
-          zip -r ../../${{ env.APP_NAME }}-osx-x64-bundle.zip "KnapsackProblem.app"
+          if [ -d "publish/osx-x64/KnapsackProblem.app" ]; then
+            cd publish/osx-x64
+            zip -r ../../${{ env.APP_NAME }}-osx-x64-bundle.zip "KnapsackProblem.app"
+            echo "ZIP bundle x64 creado"
+          else
+            echo "Advertencia: No se encontró bundle x64, saltando ZIP bundle"
+          fi
           
           # x64 flat
-          zip -r ../../${{ env.APP_NAME }}-osx-x64-flat.zip .
+          if [ -d "publish/osx-x64" ]; then
+            cd publish/osx-x64
+            zip -r ../../${{ env.APP_NAME }}-osx-x64-flat.zip .
+            echo "ZIP flat x64 creado"
+          else
+            echo "Error: Dir publish/osx-x64 no existe para flat"
+            exit 1
+          fi
 
       - uses: actions/upload-artifact@v4
         with:
@@ -168,7 +216,7 @@ jobs:
             ${{ env.APP_NAME }}-osx-x64-flat.zip
 
       # STEP AJUSTADO PARA .APP BUNDLE Y TEST HEADLESS
-      - name: Ejecutar y probar app en macOS (arm64)
+      - name: Ejecutar y probar app en macOS (arm64 flat)
         run: |
           # Debug: Lista el contenido del dir para ver la estructura real
           echo "=== DEBUG: Contenido de publish/osx-arm64 ==="
